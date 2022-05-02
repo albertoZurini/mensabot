@@ -1,0 +1,8 @@
+
+rust_telegram_bot/target/
+
+rust_telegram_bot/Cargo.lock
+
+rust/target/
+
+rust/Cargo.lock
