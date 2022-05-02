@@ -44,7 +44,7 @@ pub async fn main() -> Result<(), reqwest::Error> {
     selectors.push(("Menü I\n", "Menu 1", 0));
     selectors.push(("Menü II\n", "Menu 2", 1));
     selectors.push(("Grillgericht", "Grill", 2));
-    selectors.push(("Vitalgeright", "Vital dish", 3));
+    selectors.push(("Vitalgericht", "Vital dish", 3));
     selectors.push(("Fastlane", "Fastlane", 4));
     selectors.push(("Nachtmenü", "Night", 5));
 
