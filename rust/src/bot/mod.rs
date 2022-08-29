@@ -74,6 +74,8 @@ pub async fn main() -> Result<(), reqwest::Error> {
     }
 
     let bot = Bot::new(bot_token); // ::from_env()
+
+    
     for chat_id in chat_ids {
         let chat_id_teloxide = teloxide::types::ChatId(chat_id.as_i64().unwrap());
 
