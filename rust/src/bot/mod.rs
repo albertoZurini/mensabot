@@ -3,6 +3,7 @@ use scraper::{Html, Selector};
 use rustc_serialize::json::Json;
 use std::fs::File;
 use std::io::Read;
+use teloxide::types::{ParseMode};
 
 
 fn add_emoticon(text : String) -> String {
@@ -31,7 +32,7 @@ pub async fn main() -> Result<(), reqwest::Error> {
 
     let bot_token : &str = json.find_path(&["bot_token"]).unwrap().as_string().unwrap();
 
-    let chat_ids = json.find_path(&["broadcast_chats"]).unwrap().as_array().unwrap(); //teloxide::types::ChatId(); // TODO: array
+    let chat_ids = json.find_path(&["broadcast_chats"]).unwrap().as_array().unwrap();
     let debug_id = teloxide::types::ChatId(json.find_path(&["debug_chat_id"]).unwrap().as_i64().unwrap());
     let api_endpoint = json.find_path(&["endpoint_url"]).unwrap().as_string().unwrap();
 
@@ -41,12 +42,12 @@ pub async fn main() -> Result<(), reqwest::Error> {
 
     let mut selectors = Vec::new();
     // identifier, translated name, order
-    selectors.push(("Menü I\n", "Menu 1", 0));
-    selectors.push(("Menü II\n", "Menu 2", 1));
-    selectors.push(("Grillgericht", "Grill", 2));
-    selectors.push(("Vitalgericht", "Vital dish", 3));
-    selectors.push(("Fastlane", "Fastlane", 4));
-    selectors.push(("Nachtmenü", "Night", 5));
+    selectors.push(("Menü I\n", "*Menu 1*", 0));
+    selectors.push(("Menü II\n", "*Menu 2*", 1));
+    selectors.push(("Grillgericht", "*Grill*", 2));
+    selectors.push(("Vitalgericht", "*Vital dish*", 3));
+    selectors.push(("Fastlane", "*Fastlane*", 4));
+    selectors.push(("Nachtmenü", "- - - - - - - - - -\n*Night*", 5));
 
     let mut output : Vec<String> = Vec::new();
     output.push("".to_string());output.push("".to_string());output.push("".to_string());output.push("".to_string());output.push("".to_string());output.push("".to_string());
@@ -62,7 +63,7 @@ pub async fn main() -> Result<(), reqwest::Error> {
             let menu_text = menu_html.select(&menu_selector).next().unwrap().text().collect::<String>().trim().to_owned();
             
             if menu_type_text.contains(name) {
-                let text_wip = format!("{}\n\n{}\n\n", translated_name, add_emoticon(menu_text));
+                let text_wip = format!("{}\n{}\n\n", translated_name, add_emoticon(menu_text));
                 output[(*index) as usize] = text_wip;
                 break;
             }
@@ -73,7 +74,9 @@ pub async fn main() -> Result<(), reqwest::Error> {
         message_text.push_str(&menu_string);
     }
 
-    let bot = Bot::new(bot_token); // ::from_env()
+    message_text = message_text.replace("-", "\\-");
+
+    let bot = Bot::new(bot_token).parse_mode(ParseMode::MarkdownV2);
 
     
     for chat_id in chat_ids {
